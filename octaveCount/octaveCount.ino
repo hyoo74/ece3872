@@ -26,6 +26,7 @@ float notes[] = {C, rest, C, rest, C, rest, D, rest, E, rest, E, rest, D, rest, 
 int beats[] = {2,1,2,1,2,1,1,1,2,1,2,1,1,1,2,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,2,1,1,1,5,1};
 int gap = 100;
 
+//interrupt driven change of the octave. On a downpress the octave will increment up to 7 then go back to 4 on the next interrupt.
 void changeOctave(){
   unsigned long interrupt = millis();
   if(interrupt - last_interrupt > 1000){
@@ -38,6 +39,7 @@ void changeOctave(){
   }
 }
 
+//interrupt driven change of playback state
 void startStop(){
   unsigned long interrupt = millis();
   if(interrupt - last_interrupt > 1000){
@@ -46,6 +48,7 @@ void startStop(){
   }
 }
 
+//main playback method: TODO: make this method take in milliseconds
 void playSong(){
   int i_note_index = 0; 
   while(i_note_index < songLength && doPlayback){
@@ -58,6 +61,7 @@ void playSong(){
   } 
 }
 
+//Setup serial and pins
 void setup() {
   Serial.begin(115200);
   pinMode(OCTAVE_BUTTON, INPUT_PULLUP);
@@ -68,6 +72,7 @@ void setup() {
 }
 
 void loop() {
+  //This block reads the current button state and if it constitutes a state change, we update the testMode variable
   currMode = digitalRead(MODE_BUTTON);
   if(currMode == LOW && prevMode != LOW){
     prevMode = LOW;
@@ -77,6 +82,7 @@ void loop() {
     prevMode = HIGH;
     delay(500);
   }
+  //if doPlayback is true and we're in either of the two modes, do their respective tasks
   if(!testMode && doPlayback){
     playSong();
   }else if(testMode && doPlayback){
