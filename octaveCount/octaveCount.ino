@@ -3,6 +3,7 @@
 #define speakerPIN 5
 #define OCTAVE_BUTTON 2
 #define START_BUTTON 3
+#define MODE_BUTTON 4
 #define songLength 54
 
 int octave = 4;
@@ -17,7 +18,9 @@ float high_C = 32.70320;
 float rest = 0;
 unsigned long last_interrupt = 0;
 bool doPlayback = false;
-
+bool testMode = false;
+bool prevMode = HIGH;
+bool currMode = false;
 
 float notes[] = {C, rest, C, rest, C, rest, D, rest, E, rest, E, rest, D, rest, E, rest, F, rest, G, rest, high_C, rest, high_C, rest, high_C, rest, G, rest, G, rest, G, rest, E, rest, E, rest, E, rest, C, rest, C, rest, C, rest, G, rest, F, rest, E, rest, D, rest, C, rest};
 int beats[] = {2,1,2,1,2,1,1,1,2,1,2,1,1,1,2,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,2,1,1,1,5,1};
@@ -61,9 +64,23 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(OCTAVE_BUTTON), changeOctave, FALLING);
   pinMode(START_BUTTON, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(START_BUTTON), startStop, FALLING);
+  pinMode(MODE_BUTTON, INPUT_PULLUP);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  playSong();
+  currMode = digitalRead(MODE_BUTTON);
+  if(currMode == LOW && prevMode != LOW){
+    prevMode = LOW;
+    testMode = !testMode;
+    delay(500);
+  }else if(currMode == HIGH){
+    prevMode = HIGH;
+    delay(500);
+  }
+  if(!testMode && doPlayback){
+    playSong();
+  }else if(testMode && doPlayback){
+    Serial.println("Test Listen Mode!");
+    delay(1000);
+  }
 }
