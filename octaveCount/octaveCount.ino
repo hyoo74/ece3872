@@ -77,10 +77,10 @@ void loop() {
   if(currMode == LOW && prevMode != LOW){
     prevMode = LOW;
     testMode = !testMode;
-    delay(500);
+    delay(200);
   }else if(currMode == HIGH){
     prevMode = HIGH;
-    delay(500);
+    delay(200);
   }
   //if doPlayback is true and we're in either of the two modes, do their respective tasks
   if(!testMode && doPlayback){
